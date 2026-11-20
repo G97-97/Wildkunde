@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wildkunde Salzburg</title>
+<meta name="theme-color" content="#2f4a2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wildkunde">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{
+  --bg:#f4f1ea; --card:#fffdf8; --ink:#1f2a1c; --muted:#5d6858; --line:#ddd7c9;
+  --brand:#2f4a2b; --brand-ink:#fff; --accent:#a0662a;
+  --open:#2e7d32; --open-bg:#e3f1e2; --closed:#a33a2a; --closed-bg:#f7e3df; --warn:#8a6d00; --warn-bg:#fbf1cc;
+  --bar-bg:#e7e2d6;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#141912; --card:#1d241a; --ink:#e8ecdf; --muted:#a3ad9b; --line:#323b2d;
+    --brand:#3d5f37; --brand-ink:#fff; --accent:#d49a5b;
+    --open:#7cc47f; --open-bg:#1f3520; --closed:#ef8f7f; --closed-bg:#3d211c; --warn:#e8c95a; --warn-bg:#3a3212; --bar-bg:#2a3226; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:calc(env(safe-area-inset-top) + 10px) 16px 10px}
+header h1{margin:0 0 8px;font-size:18px;font-weight:650;letter-spacing:.2px}
+header h1 small{font-weight:400;opacity:.8;font-size:13px;margin-left:6px}
+.searchwrap{position:relative}
+#q{width:100%;font-size:17px;padding:11px 14px;border-radius:12px;border:0;outline:none;background:#fff;color:#1f2a1c}
+#sugg{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.18);display:none;max-height:60vh;overflow-y:auto}
+#sugg button{display:block;width:100%;text-align:left;padding:11px 14px;background:none;border:0;border-bottom:1px solid var(--line);color:inherit;font-size:16px}
+#sugg button small{color:var(--muted)}
+main{padding:14px 16px calc(84px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:6;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:0;padding:8px 2px 9px;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:20px;line-height:1}
+nav button.on{color:var(--brand);font-weight:650}
+@media (prefers-color-scheme: dark){ nav button.on{color:var(--accent)} }
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+.card h3{margin:0 0 8px;font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent)}
+.hero h2{margin:0;font-size:26px;line-height:1.2}
+.hero .lat{color:var(--muted);font-style:italic;margin-top:2px}
+.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:13px;font-weight:600}
+.chip.open{background:var(--open-bg);color:var(--open)} .chip.closed{background:var(--closed-bg);color:var(--closed)} .chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.grp{background:var(--bar-bg);color:var(--muted);font-weight:500}
+.sz{border-top:1px solid var(--line);padding:10px 0}
+.sz:first-of-type{border-top:0;padding-top:0}
+.sz .row{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.sz .k{font-weight:600}
+.sz .d{font-variant-numeric:tabular-nums}
+.bar{position:relative;height:14px;border-radius:7px;background:var(--bar-bg);margin-top:6px;overflow:hidden}
+.bar i{position:absolute;top:0;bottom:0;background:var(--open);opacity:.85}
+.bar b{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+.months{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px}
+.note{font-size:14px;color:var(--muted);margin-top:4px}
+.warnbox{background:var(--warn-bg);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:8px}
+dl{margin:0;display:grid;grid-template-columns:minmax(90px,38%) 1fr;gap:6px 12px}
+dt{color:var(--muted);font-size:14px} dd{margin:0}
+.mw{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:560px){.mw{grid-template-columns:1fr 1fr}}
+.mw div{background:var(--bg);border-radius:10px;padding:10px}
+.mw strong{display:block;margin-bottom:2px}
+ul.tl{list-style:none;margin:0;padding:0}
+ul.tl li{display:flex;gap:10px;padding:5px 0;border-top:1px dashed var(--line)} ul.tl li:first-child{border-top:0}
+ul.tl li b{min-width:86px;color:var(--accent);font-weight:600;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td{padding:6px 4px;border-top:1px solid var(--line);vertical-align:top} tr:first-child td{border-top:0}
+td:first-child{font-weight:600;width:40%}
+.src{font-size:12px;color:var(--muted);margin-top:8px}
+.list button{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px;color:inherit;font-size:16px}
+.list button small{color:var(--muted);display:block;font-size:13px}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.filters button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px}
+.filters button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.lbl{font-size:13px;color:var(--muted);margin-top:6px}
+.btn{display:inline-block;background:var(--brand);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-size:16px;font-weight:600}
+.btn.sec{background:var(--bar-bg);color:var(--ink)}
+.quiz .opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px}
+.quiz .opt.right{background:var(--open-bg);border-color:var(--open)} .quiz .opt.wrong{background:var(--closed-bg);border-color:var(--closed)}
+.empty{color:var(--muted);text-align:center;padding:30px 10px}
+.toc{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:0 -16px 10px;padding-left:16px;padding-right:16px;scrollbar-width:none}
+.toc a{flex:none;font-size:13px;padding:5px 10px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+p{margin:0 0 6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Wildkunde Salzburg <small id="today"></small></h1>
+  <div class="searchwrap">
+    <input id="q" type="search" placeholder="Wildart eingeben, z. B. Gams, Reh, Fuchs …" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div id="sugg"></div>
+  </div>
+</header>
+<main id="main"></main>
+<nav>
+  <button data-v="home" class="on"><span>🔎</span>Suche</button>
+  <button data-v="jetzt"><span>📅</span>Jetzt offen</button>
+  <button data-v="bestimmen"><span>🧭</span>Bestimmen</button>
+  <button data-v="lernen"><span>🎓</span>Lernen</button>
+  <button data-v="info"><span>ℹ️</span>Quellen</button>
+</nav>
+<script src="data.js"></script>
+<script>
+(function(){
+const $ = s => document.querySelector(s);
+const main = $("#main"), q = $("#q"), sugg = $("#sugg");
+const MON = ["Jän","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => s.toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").trim();
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+
+/* ---------- Datum ---------- */
+const now = new Date();
+const md = d => String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+const TODAY = md(now);
+$("#today").textContent = now.toLocaleDateString("de-AT", {day:"numeric", month:"long", year:"numeric"});
+const fmt = m => { const [mm, dd] = m.split("-").map(Number); return (mm===2 && dd>=28) ? "Ende Feb." : dd + "." + mm + "."; };
+const isOpen = (s, t=TODAY) => s.von <= s.bis ? (t >= s.von && t <= s.bis) : (t >= s.von || t <= s.bis);
+const dayOfYear = m => { const [mm, dd] = m.split("-").map(Number); return (Date.UTC(2024, mm-1, dd) - Date.UTC(2024,0,1)) / 864e5; };
+function bar(s){
+  const a = dayOfYear(s.von)/366*100, b = (dayOfYear(s.bis)+1)/366*100, t = dayOfYear(TODAY)/366*100;
+  const seg = s.von <= s.bis ? `<i style="left:${a}%;width:${b-a}%"></i>` : `<i style="left:0;width:${b}%"></i><i style="left:${a}%;width:${100-a}%"></i>`;
+  return `<div class="bar">${seg}<b style="left:${t}%"></b></div><div class="months">${MON.map(m=>`<span>${m[0]}</span>`).join("")}</div>`;
+}
+function status(w){
+  if (!w.sz.length) return w.szUnsicher ? `<span class="chip warn">Geschont (prüfen)</span>` : `<span class="chip closed">Ganzjährig geschont</span>`;
+  const open = w.sz.filter(s => isOpen(s));
+  if (open.length === w.sz.length) return `<span class="chip open">Heute Schusszeit</span>`;
+  if (open.length) return `<span class="chip open">Teilweise offen</span>`;
+  return `<span class="chip closed">Heute Schonzeit</span>`;
+}
+
+/* ---------- Suche ---------- */
+const INDEX = WILD.map(w => ({ w, keys: [w.name, ...w.alias, w.latein].map(norm) }));
+function find(term){
+  const t = norm(term); if (!t) return [];
+  const scored = [];
+  for (const it of INDEX){
+    let best = 99;
+    it.keys.forEach((k,i) => { if (k === t) best = Math.min(best, 0); else if (k.startsWith(t)) best = Math.min(best, 1 + (i?1:0)); else if (k.includes(t)) best = Math.min(best, 3); });
+    if (best < 99) scored.push([best, it.w]);
+  }
+  return scored.sort((a,b) => a[0]-b[0] || a[1].name.localeCompare(b[1].name)).map(x => x[1]);
+}
+q.addEventListener("input", () => {
+  const r = find(q.value).slice(0, 8);
+  if (!q.value.trim()) { sugg.style.display = "none"; return; }
+  sugg.innerHTML = r.length ? r.map(w => `<button data-id="${w.id}">${esc(w.name)} <small>· ${esc(w.gruppe)}</small></button>`).join("") : `<button disabled>Keine Wildart gefunden</button>`;
+  sugg.style.display = "block";
+});
+q.addEventListener("keydown", e => { if (e.key === "Enter"){ const r = find(q.value); if (r[0]) open(r[0].id); } });
+sugg.addEventListener("click", e => { const b = e.target.closest("button[data-id]"); if (b) open(b.dataset.id); });
+document.addEventListener("click", e => { if (!e.target.closest(".searchwrap")) sugg.style.display = "none"; });
+
+/* ---------- Navigation ---------- */
+let current = "home";
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => { location.hash = b.dataset.v; });
+window.addEventListener("hashchange", route);
+function setNav(v){ document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === v)); }
+function open(id){ sugg.style.display = "none"; q.blur(); q.value = ""; location.hash = "w/" + id; }
+function route(){
+  const h = decodeURIComponent(location.hash.slice(1)) || "home";
+  window.scrollTo(0,0);
+  if (h.startsWith("w/")) { const w = WILD.find(x => x.id === h.slice(2)); if (w) { setNav(""); return detail(w); } }
+  current = h; setNav(h);
+  ({home, jetzt, bestimmen, lernen, info}[h] || home)();
+}
+
+/* ---------- Ansichten ---------- */
+function listItem(w, extra=""){
+  return `<button data-id="${w.id}"><span>${esc(w.name)}<small>${esc(extra || w.gruppe)}</small></span>${status(w)}</button>`;
+}
+function bindList(){ main.querySelectorAll(".list button[data-id]").forEach(b => b.onclick = () => open(b.dataset.id)); }
+
+function home(){
+  const seen = store.get("gesehen", {});
+  const recent = Object.entries(seen).sort((a,b) => b[1].last.localeCompare(a[1].last)).slice(0,5).map(([id]) => WILD.find(w=>w.id===id)).filter(Boolean);
+  const groups = ["Schalenwild","Haarwild","Federwild"];
+  main.innerHTML = `
+    <div class="card"><p>Gib oben eine Wildart ein. Du siehst Schusszeiten laut Salzburger Schonzeiten-Verordnung, Klasseneinteilung, Ansprechen, Merkmale von Männchen und Weibchen, Fortpflanzung, Äsung, Lebensraum, Spuren, Laute, Jahreszyklus und Weidmannssprache.</p><p class="note">Funktioniert nach dem ersten Laden auch ohne Internet.</p></div>
+    ${recent.length ? `<h3 style="margin:16px 0 8px">Zuletzt beobachtet</h3><div class="list">${recent.map(w=>listItem(w, "beobachtet am " + new Date(seen[w.id].last).toLocaleDateString("de-AT") + " · " + seen[w.id].n + "×")).join("")}</div>` : ""}
+    ${groups.map(g => `<h3 style="margin:16px 0 8px">${g}</h3><div class="list">${WILD.filter(w=>w.gruppe===g).map(w=>listItem(w)).join("")}</div>`).join("")}`;
+  bindList();
+}
+
+function detail(w){
+  const seen = store.get("gesehen", {});
+  const s = seen[w.id];
+  const sec = (id, title, body) => body ? `<div class="card" id="${id}"><h3>${title}</h3>${body}</div>` : "";
+  const szHtml = w.sz.length
+    ? w.sz.map(x => `<div class="sz"><div class="row"><span class="k">${esc(x.k)}</span><span class="d">${fmt(x.von)} – ${fmt(x.bis)}</span></div>${bar(x)}<div class="row" style="margin-top:4px">${isOpen(x) ? '<span class="chip open">heute offen</span>' : '<span class="chip closed">heute geschont</span>'}</div>${x.note ? `<div class="note">${esc(x.note)}</div>` : ""}</div>`).join("")
+      + (w.szHinweis ? `<div class="warnbox">${esc(w.szHinweis)}</div>` : "")
+    : `<div class="warnbox">${esc(w.szGeschont)}</div>`;
+  const kl = w.klassen ? `<table>${w.klassen.map(([a,b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join("")}</table><div class="src">Quelle: ${esc(QUELLEN.kl)}</div>` : "";
+  const dlist = arr => arr && arr.length ? `<dl>${arr.map(([a,b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl>` : "";
+  const tl = arr => arr && arr.length ? `<ul class="tl">${arr.map(([a,b]) => `<li><b>${esc(a)}</b><span>${esc(b)}</span></li>`).join("")}</ul>` : "";
+  const toc = [["sz","Schusszeit"], w.klassen && ["kl","Klassen"], ["an","Ansprechen"], ["mw","♂/♀"], ["al","Alter"], ["fo","Fortpflanzung"], ["ae","Äsung"], ["le","Lebensraum"], ["sp","Spuren"], ["la","Laute"], w.jahr.length && ["ja","Jahreszyklus"], w.sprache.length && ["ws","Weidmannssprache"]].filter(Boolean);
+  main.innerHTML = `
+    <div class="card hero">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><span class="chip grp">${esc(w.gruppe)}</span>${status(w)}</div>
+      <h2 style="margin-top:8px">${esc(w.name)}</h2><div class="lat">${esc(w.latein)}</div>
+      <p style="margin-top:8px">${esc(w.kurz)}</p>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" id="seen">👁 Heute beobachtet</button>
+        <span class="note" id="seeninfo">${s ? `Schon ${s.n}× beobachtet, zuletzt ${new Date(s.last).toLocaleDateString("de-AT")}` : "Noch nicht beobachtet"}</span>
+      </div>
+    </div>
+    <div class="toc">${toc.map(([id,t]) => `<a href="#" data-go="${id}">${t}</a>`).join("")}</div>
+    ${sec("sz", "Schusszeit Land Salzburg", szHtml + `<div class="src">Quelle: ${esc(QUELLEN.sz)}. Freigabe immer nur im Rahmen des Abschussplans und behördlicher Anordnungen.</div>`)}
+    ${sec("kl", "Klasseneinteilung (Salzburg)", kl)}
+    ${sec("an", "Sicher ansprechen", `<p>${esc(w.ansprechen)}</p>`)}
+    ${sec("mw", "Männlich und weiblich", `<div class="mw"><div><strong>♂ Männlich</strong>${esc(w.geschlecht.m)}</div><div><strong>♀ Weiblich</strong>${esc(w.geschlecht.w)}</div></div>`)}
+    ${sec("al", "Altersmerkmale", `<p>${esc(w.alter)}</p>`)}
+    ${sec("fo", "Fortpflanzung (Brunft, Setz-, Wurf-, Legezeit)", dlist(w.fortpflanzung))}
+    ${sec("ae", "Äsung / Nahrung", `<p>${esc(w.aesung)}</p>`)}
+    ${sec("le", "Lebensraum", `<p>${esc(w.lebensraum)}</p>`)}
+    ${sec("sp", "Spuren und Zeichen", `<p>${esc(w.spuren)}</p>`)}
+    ${sec("la", "Lautäußerungen", `<p>${esc(w.laute)}</p>`)}
+    ${sec("ja", "Jahreszyklus", tl(w.jahr))}
+    ${sec("ws", "Weidmannssprache", dlist(w.sprache))}
+    ${w.wissen && w.wissen.length ? sec("wi", "Wissenswert", w.wissen.map(x=>`<p>• ${esc(x)}</p>`).join("")) : ""}
+    <div class="src" style="text-align:center;margin:10px 0">Biologische Angaben: ${esc(QUELLEN.bio)}. Zeiten schwanken je nach Höhenlage und Jahr.</div>`;
+  main.querySelectorAll("[data-go]").forEach(a => a.onclick = e => { e.preventDefault(); const t = document.getElementById(a.dataset.go); if (t) window.scrollTo({top: t.getBoundingClientRect().top + scrollY - 130, behavior:"smooth"}); });
+  $("#seen").onclick = () => {
+    const all = store.get("gesehen", {}); const e = all[w.id] || {n:0};
+    e.n++; e.last = new Date().toISOString(); all[w.id] = e; store.set("gesehen", all);
+    $("#seeninfo").textContent = `Schon ${e.n}× beobachtet, zuletzt heute`;
+  };
+}
+
+function jetzt(){
+  const rows = [];
+  WILD.forEach(w => w.sz.forEach(s => rows.push({w, s, open: isOpen(s)})));
+  const openR = rows.filter(r => r.open), soon = [];
+  // nächste Öffnungen in 60 Tagen
+  for (let i = 1; i <= 60; i++){
+    const d = new Date(now); d.setDate(d.getDate()+i); const t = md(d);
+    rows.forEach(r => { if (!r.open && r.s.von === t) soon.push({...r, d}); });
+  }
+  const closedW = WILD.filter(w => !w.sz.length);
+  const line = r => `<button data-id="${r.w.id}"><span>${esc(r.w.name)}<small>${esc(r.s.k)} · ${fmt(r.s.von)} – ${fmt(r.s.bis)}</small></span><span class="chip open">offen</span></button>`;
+  main.innerHTML = `
+    <div class="card"><h3>Heute, ${now.toLocaleDateString("de-AT")}</h3><p>Diese Wildarten und Klassen haben heute in Salzburg Schusszeit. Die Freigabe richtet sich zusätzlich nach Abschussplan, Wildbehandlungszonen und Bescheiden.</p></div>
+    <div class="list">${openR.map(line).join("") || '<div class="empty">Keine</div>'}</div>
+    <h3 style="margin:16px 0 8px">Geht in den nächsten 60 Tagen auf</h3>
+    <div class="list">${soon.map(r => `<button data-id="${r.w.id}"><span>${esc(r.w.name)}<small>${esc(r.s.k)} · ab ${r.d.toLocaleDateString("de-AT")}</small></span><span class="chip warn">bald</span></button>`).join("") || '<div class="empty">Keine Öffnungen in den nächsten 60 Tagen</div>'}</div>
+    <h3 style="margin:16px 0 8px">Ganzjährig geschont</h3>
+    <div class="list">${closedW.map(w => listItem(w)).join("")}</div>`;
+  bindList();
+}
+
+let F = {};
+function bestimmen(){
+  const opts = {
+    groesse: ["groß","mittel","klein"],
+    typ: ["Huftier","Raubwild","Nager","Hasenartige","Hühnervogel","Wasservogel","Taube","Rabenvogel","Sonstiger Vogel"],
+    kopf: ["Geweih","Hörner","keiner"],
+    habitat: ["Wald","Gebirge","Feld","Wasser","Siedlung"]
+  };
+  const names = {groesse:"Größe", typ:"Tiergruppe", kopf:"Kopfschmuck", habitat:"Wo gesehen?"};
+  const hits = WILD.filter(w => Object.entries(F).every(([k,v]) => !v || (Array.isArray(w.tags[k]) ? w.tags[k].includes(v) : w.tags[k] === v)));
+  main.innerHTML = `
+    <div class="card"><h3>Bestimmungshelfer</h3><p>Wähle, was du beobachtet hast. Die Liste grenzt sich ein. Danach im Abschnitt „Sicher ansprechen“ der Wildart die Unterscheidungsmerkmale prüfen.</p>
+    <p class="note">Eine Bilderkennung per Foto ist offline auf dem Handy nicht zuverlässig möglich. Dafür bräuchte die App ein großes Erkennungsmodell, und gerade die jagdlich entscheidenden Merkmale (Geschlecht, Alter, Klasse) erkennt keine App sicher. Zum Bestimmen der Art per Foto eignen sich, mit Internet, z. B. die kostenlosen Apps iNaturalist oder Merlin Bird ID (Vögel, auch per Ruf).</p></div>
+    ${Object.entries(opts).map(([k, vals]) => `<div class="lbl">${names[k]}</div><div class="filters">${vals.map(v => `<button data-k="${k}" data-v="${v}" class="${F[k]===v?"on":""}">${v}</button>`).join("")}</div>`).join("")}
+    <div style="margin:4px 0 12px"><button class="btn sec" id="reset">Zurücksetzen</button> <span class="note">${hits.length} Treffer</span></div>
+    <div class="list">${hits.map(w => listItem(w)).join("")}</div>`;
+  main.querySelectorAll(".filters button").forEach(b => b.onclick = () => { F[b.dataset.k] = F[b.dataset.k] === b.dataset.v ? null : b.dataset.v; bestimmen(); });
+  $("#reset").onclick = () => { F = {}; bestimmen(); };
+  bindList();
+}
+
+/* ---------- Lernquiz ---------- */
+function makeQuestion(){
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const shuffle = a => a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+  const types = [];
+  const withSz = WILD.filter(w => w.sz.length);
+  types.push(() => { const w = pick(withSz), s = pick(w.sz); const right = `${fmt(s.von)} – ${fmt(s.bis)}`;
+    const wrong = shuffle([...new Set(WILD.flatMap(x=>x.sz).map(x=>`${fmt(x.von)} – ${fmt(x.bis)}`))].filter(x=>x!==right)).slice(0,3);
+    return {q:`Schusszeit in Salzburg: ${w.name}, ${s.k}?`, right, opts: shuffle([right, ...wrong]), id:w.id}; });
+  types.push(() => { const pool = WILD.filter(w => w.fortpflanzung.length > 1); const w = pick(pool); const f = pick(w.fortpflanzung);
+    const others = shuffle(WILD.filter(x => x.id!==w.id).flatMap(x => x.fortpflanzung.filter(y=>y[0]===f[0]).map(y=>y[1]))).filter(v=>v!==f[1]);
+    const wrong = [...new Set(others)].slice(0,3); if (wrong.length < 2) return null;
+    return {q:`${w.name}: ${f[0]}?`, right:f[1], opts: shuffle([f[1], ...wrong]), id:w.id}; });
+  types.push(() => { const pool = WILD.filter(w => w.sprache.length); const w = pick(pool); const s = pick(w.sprache);
+    const wrong = shuffle([...new Set(WILD.flatMap(x=>x.sprache).map(x=>x[1]))].filter(v=>v!==s[1])).slice(0,3);
+    return {q:`Weidmannssprache (${w.name}): Was bedeutet „${s[0]}“?`, right:s[1], opts: shuffle([s[1], ...wrong]), id:w.id}; });
+  types.push(() => { const pool = WILD.filter(w => w.klassen); const w = pick(pool); const k = pick(w.klassen.filter(x=>/^Klasse/.test(x[0])));
+    const wrong = shuffle(WILD.filter(x=>x.klassen).flatMap(x=>x.klassen.filter(y=>/^Klasse/.test(y[0])).map(y=>y[1]))).filter(v=>v!==k[1]);
+    return {q:`${w.name}: Wer gehört in ${k[0]}?`, right:k[1], opts: shuffle([k[1], ...[...new Set(wrong)].slice(0,3)]), id:w.id}; });
+  types.push(() => { const w = pick(WILD.filter(x=>x.ansprechen.length>60)); const wrong = shuffle(WILD.filter(x=>x.id!==w.id && x.gruppe===w.gruppe)).slice(0,3).map(x=>x.name);
+    const txt = w.ansprechen.split(/(?<=\.)\s/).find(x => !x.includes(w.name)) || w.ansprechen;
+    return {q:`Welche Wildart ist gemeint? „${txt}“`, right:w.name, opts: shuffle([w.name, ...wrong]), id:w.id}; });
+  for (let i=0;i<10;i++){ const r = pick(types)(); if (r && r.opts.length >= 3) return r; }
+  return types[0]();
+}
+function lernen(){
+  const score = store.get("quiz", {r:0, n:0});
+  const Q = makeQuestion();
+  main.innerHTML = `
+    <div class="card quiz"><h3>Lernquiz</h3><p class="note">Bisher ${score.r} von ${score.n} richtig</p>
+      <p style="font-weight:600;font-size:17px;margin-top:8px">${esc(Q.q)}</p>
+      ${Q.opts.map((o,i) => `<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")}
+      <div id="after" style="display:none;margin-top:10px;display:none;gap:8px"><button class="btn" id="next">Nächste Frage</button> <button class="btn sec" id="more">Zur Wildart</button></div>
+    </div>`;
+  main.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    if (main.querySelector(".opt.right")) return;
+    const ok = Q.opts[b.dataset.i] === Q.right;
+    main.querySelectorAll(".opt").forEach(x => { if (Q.opts[x.dataset.i] === Q.right) x.classList.add("right"); });
+    if (!ok) b.classList.add("wrong");
+    score.n++; if (ok) score.r++; store.set("quiz", score);
+    $("#after").style.display = "flex";
+  });
+  main.addEventListener("click", function h(e){
+    if (e.target.id === "next"){ main.removeEventListener("click", h); lernen(); }
+    if (e.target.id === "more"){ main.removeEventListener("click", h); open(Q.id); }
+  });
+}
+
+function info(){
+  main.innerHTML = `
+    <div class="card"><h3>Quellen</h3>
+      <p><b>Schusszeiten:</b> ${esc(QUELLEN.sz)}.</p>
+      <p><b>Klasseneinteilung:</b> ${esc(QUELLEN.kl)}.</p>
+      <p><b>Biologie, Merkmale, Weidmannssprache:</b> ${esc(QUELLEN.bio)}.</p>
+      <p class="note">Stand der Daten: November 2026.</p>
+    </div>
+    <div class="card"><h3>Wichtige Hinweise</h3>
+      <p>• Die App ersetzt nicht den Gesetzestext. Verbindlich ist die jeweils geltende Fassung im Rechtsinformationssystem (RIS) des Bundes.</p>
+      <p>• Die Landesregierung kann Schonzeiten befristet verlängern oder verkürzen (§ 55 Abs 3 S-JagdG). Zusätzlich gelten Abschussplan, Wildbehandlungszonen bei Rot- und Gamswild und Bescheide.</p>
+      <p>• Krankes oder verletztes Wild darf auch in der Schonzeit erlegt werden, mit Meldung an den Hegemeister (§ 56 S-JagdG).</p>
+      <p>• Arten, die in der Schonzeiten-Verordnung nicht vorkommen und nicht in § 54 Abs 2 stehen, sind ganzjährig geschont (§ 54 Abs 3). Diese sind mit „prüfen“ markiert, wenn die Zuordnung aus dem Gesetz abgeleitet und nicht ausdrücklich genannt ist.</p>
+      <p>• Biologische Zeiten (Brunft, Setzzeit usw.) sind Durchschnittswerte.</p>
+    </div>
+    <div class="card"><h3>Deine Daten</h3>
+      <p class="note">Beobachtungen und Quiz-Punkte bleiben nur auf diesem Handy gespeichert.</p>
+      <button class="btn sec" id="clr">Beobachtungen und Quiz zurücksetzen</button></div>`;
+  $("#clr").onclick = () => { store.set("gesehen", {}); store.set("quiz", {r:0,n:0}); $("#clr").textContent = "Zurückgesetzt"; };
+}
+
+route();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
